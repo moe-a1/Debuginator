@@ -2,7 +2,7 @@ import sys
 import typer
 import questionary
 from rich.console import Console
-from .core import load_config, save_config
+from .core import load_config, save_config, process_last_command
 from .api import get_available_models
 
 console = Console()
@@ -42,6 +42,8 @@ def debug():
     if not config.get("api_key"):
         console.print("[red]API key not configured. Run 'debuginator config' first.[/red]")
         return
+    
+    process_last_command(console, config)
 
 
 def main():
