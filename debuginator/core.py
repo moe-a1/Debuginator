@@ -1,6 +1,7 @@
 import json
 import subprocess
 from pathlib import Path
+import questionary
 from .api import debug_error
 
 BASE_DIR = Path(__file__).parent
@@ -44,14 +45,32 @@ def get_last_terminal_output():
     return output, last_cmd
 
 
+def run_user_command(command):
+    cmd_process = subprocess.run(command, shell=True, capture_output=True, text=True)
+    output = cmd_process.stderr.strip() if cmd_process.stderr else cmd_process.stdout.strip()
+    return output, command
+
+
 def process_last_command(console, config):    
     output, last_cmd = get_last_terminal_output()
     
     if not output:
         console.print("[yellow]No output detected from the last command.[/yellow]")
-        return None
+        console.print("[blue]Please enter the command that caused the error you want to debug:[/blue]")
+        
+        user_command = questionary.text("Command:").ask()
+        if not user_command:
+            console.print("[red]No command provided. Exiting.[/red]")
+            return None
+            
+        output, last_cmd = run_user_command(user_command)
+        
+        if not output:
+            console.print("[yellow]No output detected from the provided command.[/yellow]")
+            return None
     
     console.print(f"[bold red]Output:[/bold red] {output}")
+    console.print(f"[bold blue]Command:[/bold blue] {last_cmd}")
 
     analysis = debug_error(output, config["api_key"], config["model"], console)
     
