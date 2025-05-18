@@ -36,7 +36,7 @@ def config():
 
 
 @app.command()
-def show_model():
+def selected_model():
     current_config = load_config()
     
     if not current_config.get("api_key"):
