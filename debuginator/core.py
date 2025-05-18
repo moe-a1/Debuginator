@@ -1,6 +1,8 @@
 import json
 import subprocess
 from pathlib import Path
+from rich.panel import Panel
+from rich.markdown import Markdown
 import questionary
 from .api import debug_error
 
@@ -51,6 +53,13 @@ def run_user_command(command):
     return output, command
 
 
+def format_and_print_response(console, text):
+    md = Markdown(text)
+
+    panel = Panel(md, border_style="green", expand=False, padding=(1, 2))
+    console.print(panel)
+
+
 def process_last_command(console, config):    
     output, last_cmd = get_last_terminal_output()
     
@@ -69,13 +78,10 @@ def process_last_command(console, config):
             console.print("[yellow]No output detected from the provided command.[/yellow]")
             return None
     
-    console.print(f"[bold red]Output:[/bold red] {output}")
-    console.print(f"[bold blue]Command:[/bold blue] {last_cmd}")
-
     analysis = debug_error(output, config["api_key"], config["model"], console)
     
     if analysis:
         console.print("\n[bold green]AI Analysis:[/bold green]")
-        console.print(analysis)
+        format_and_print_response(console, analysis)
     
     return analysis

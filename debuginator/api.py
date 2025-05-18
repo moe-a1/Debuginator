@@ -37,16 +37,22 @@ def debug_error(error_message, api_key, model, console):
                 
                 {error_message}
                 
-                Provide:
-                1. A clear explanation of what caused this error
-                2. Step-by-step solutions to fix it
-                3. Any additional context that might be helpful
+                Provide your response in markdown format with the following sections:
+                
+                ## Error Analysis
+                A clear explanation of what caused this error
+                
+                ## Solution Steps
+                Step-by-step solutions to fix it
+                
+                ## Additional Context
+                Any additional context or information that might be helpful
             """
     
     payload = {
         "model": model,
         "messages": [
-            {"role": "system", "content": "You are an expert programming assistant."},
+            {"role": "system", "content": "You are an expert programming assistant. Format your response in markdown."},
             {"role": "user", "content": prompt}
         ]
     }
