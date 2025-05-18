@@ -26,8 +26,12 @@ def save_config(config):
 
 def get_last_terminal_output():
     history_process = subprocess.run('doskey /history', shell=True, capture_output=True, text=True)
-    history = history_process.stdout.strip().split('\n')
+
+    if not history_process.stdout.strip():
+        history_process = subprocess.run('Get-History | Select-Object -Property CommandLine | ForEach-Object { $_.CommandLine }', shell=True, capture_output=True, text=True)
     
+    history = history_process.stdout.strip().split('\n')
+
     if not history:
         return None, None
     
